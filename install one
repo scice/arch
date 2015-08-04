@@ -1,0 +1,54 @@
+
+# lsblk
+# parted /dev/sdx
+mklabel gpt
+(parted) mkpart ESP fat32 1MiB 513MiB
+(parted) set 1 boot on
+(parted) mkpart primary ext4 513MiB 20.5GiB
+(parted) mkpart primary linux-swap 20.5GiB 24.5GiB
+(parted) mkpart primary ext4 24.5GiB 100%
+(parted) quit
+
+# lsblk /dev/sdx
+# mkfs.ext4 /dev/sdxY
+# mkfs.vfat -F32 /dev/sdxY
+# mkswap /dev/sdxY
+# swapon /dev/sdxY
+
+# mount /dev/sdxY /mnt
+# mkdir /mnt/home
+# mount /dev/sdxY /mnt/home
+
+# mkdir -p /mnt/boot
+# mount /dev/sdxZ /mnt/boot
+
+# nano /etc/pacman.d/mirrorlist
+# pacstrap -i /mnt base base-devel
+# genfstab -U /mnt > /mnt/etc/fstab
+
+# arch-chroot /mnt /bin/bash
+# nano /etc/locale.gen
+# locale-gen
+# echo LANG=en_US.UTF-8 > /etc/locale.conf
+# ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+# hwclock --systohc --utc
+# echo sc > /etc/hostname
+dhcpcd
+# systemctl enable dhcpcd
+# mkinitcpio -p linux
+# passwd
+
+# pacman -S dosfstools
+# bootctl --path=/boot install
+# nano /boot/loader/entries/arch.conf
+title          Arch Linux
+linux          /vmlinuz-linux
+initrd         /initramfs-linux.img
+options        root=/dev/sdaX rw
+
+# nano /boot/loader/loader.conf
+timeout 3
+default arch
+# exit
+# umount -R /mnt
+# reboot
